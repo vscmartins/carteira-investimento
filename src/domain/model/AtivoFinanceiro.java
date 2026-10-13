@@ -40,11 +40,11 @@ public abstract class AtivoFinanceiro implements Lucravel, Tributavel {
     }
 
     public void addQuantidade(int qtd, double precoCompra) {
-        double valorTotalAtual = this.qntd * precoMedio;
+        double valorTotalAtual = this.qntd * this.precoMedio;
         double valorNovaCompra = qtd * precoCompra;
 
         this.qntd += qtd;
-        this.precoMedio += (valorNovaCompra + valorTotalAtual)/ this.qntd;
+        this.precoMedio = (valorNovaCompra + valorTotalAtual)/ this.qntd;
     }
 
     public void subtrairQntd(int qtd) {
