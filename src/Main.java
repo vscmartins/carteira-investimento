@@ -9,6 +9,19 @@ import domain.dto.ResumoCarteiraDTO;
 import static java.lang.IO.*;
 
 void main(String[] args) {
+
+        // --- TESTE DE LIGAÇÃO À BASE DE DADOS ---
+        try {
+                java.sql.Connection conexao = domain.repository.ConexaoBanco.obterConexao();
+                println("✅ SUCESSO: Ligado à base de dados MySQL!");
+                conexao.close(); // Fechamos logo a seguir só para testar
+        } catch (Exception e) {
+                println("❌ ERRO: Não foi possível ligar à base de dados.");
+                println("Detalhe do erro: " + e.getMessage());
+                System.exit(1); // Para o programa se não houver base de dados
+        }
+        // ----------------------------------------
+
         println("==============================================");
         println("    BEM-VINDO AO CARTEIRA DE INVESTIMENTO     ");
         println("==============================================");
