@@ -106,13 +106,14 @@ create table if not exists movimentacoes (
 
 create index idx_movimentacoes_data on movimentacoes(data_movimentacao);
 
-describe movimentacoes;
+-- --------------------------------------------------------------------------------------------
 
--- 1 Cria o usuário e define a senha
+-- Cria o usuário apenas se ele não existir (ou apaga o antigo para recriar limpo)
+DROP USER IF EXISTS 'carteira_app'@'localhost';
 CREATE USER 'carteira_app'@'localhost' IDENTIFIED BY 'Senha-carteira@123';
 
--- 1.1 Dá os poderes apenas de leitura, inserção e atualização no banco certo
+-- Dá os poderes apenas de leitura, inserção e atualização no banco certo
 GRANT SELECT, INSERT, UPDATE ON carteira_invest_bd.* TO 'carteira_app'@'localhost';
 
--- 1.2 Atualiza os privilégios para o segurança do MySQL recarregar as regras
+-- Atualiza os privilégios para o segurança do MySQL recarregar as regras
 FLUSH PRIVILEGES;
