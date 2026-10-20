@@ -1,26 +1,27 @@
 import domain.entity.Acao;
 import domain.entity.AtivoFinanceiro;
 import domain.entity.Criptomoeda;
-import domain.entity.Investidor;
 import domain.service.CarteiraService;
 import domain.validador.Entrada;
 import domain.dto.ResumoCarteiraDTO;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import static java.lang.IO.*;
 
 void main(String[] args) {
 
-        // --- TESTE DE LIGAÇÃO À BASE DE DADOS ---
         try {
                 java.sql.Connection conexao = domain.repository.ConexaoBanco.obterConexao();
-                println("✅ SUCESSO: Ligado à base de dados MySQL!");
-                conexao.close(); // Fechamos logo a seguir só para testar
+                println(" SUCESSO: Ligado à base de dados MySQL!");
+                conexao.close();
         } catch (Exception e) {
-                println("❌ ERRO: Não foi possível ligar à base de dados.");
+                println(" ERRO: Não foi possível ligar à base de dados.");
                 println("Detalhe do erro: " + e.getMessage());
-                System.exit(1); // Para o programa se não houver base de dados
+                System.exit(1);
         }
-        // ----------------------------------------
+
 
         println("==============================================");
         println("    BEM-VINDO AO CARTEIRA DE INVESTIMENTO     ");
@@ -29,12 +30,22 @@ void main(String[] args) {
 
         String nome = Entrada.lerEntrada("Digite seu nome: ");
         String cpf = Entrada.lerCpf("Digite seu CPF (com ou sem pontos): ");
-        Investidor investidor = new Investidor(nome, cpf);
+        String email = Entrada.lerEntrada("Digite seu e-mail: ");
+
+        String dataStr = Entrada.lerEntrada("Digite sua data de nascimento (AAAA-MM-DD): ");
+        LocalDate dataNascimento = LocalDate.parse(dataStr, DateTimeFormatter.ISO_LOCAL_DATE);
 
         CarteiraService carteira = new CarteiraService();
 
+        try {
+                carteira.cadastrarInvestidor(nome, cpf, email, dataNascimento);
+        } catch (Exception e) {
+                println(" Erro ao cadastrar investidor: " + e.getMessage());
+                System.exit(1);
+        }
+
         while (true) {
-                println("\n--- MENU DE " + investidor.getNome().toUpperCase() + " ---");
+                println("\n--- MENU DE " + nome.toUpperCase() + " ---");
                 println("1. Comprar Ativo");
                 println("2. Vender Ativo");
                 println("3. Listar Carteira");
@@ -63,7 +74,6 @@ void main(String[] args) {
         }
 }
 
-
 void comprarAtivo(CarteiraService carteira) {
         println("\n-- COMPRAR ATIVO --");
         String tipo = Entrada.lerEntradaComRegex(
@@ -71,32 +81,32 @@ void comprarAtivo(CarteiraService carteira) {
                 "[12]",
                 "Digite 1 ou 2.");
 
-        String ticket = Entrada.lerEntrada("Ticket (ex: PETR4, BTC): ").toUpperCase();
+        String ticker = Entrada.lerEntrada("Ticker (ex: PETR4, BTC): ").toUpperCase();
         String nome = Entrada.lerEntrada("Nome da empresa/moeda: ");
         int qtd = (int) Entrada.lerDouble("Quantidade: ");
         double preco = Entrada.lerDouble("Preço médio (R$): ");
 
         AtivoFinanceiro novoAtivo;
         if (tipo.equals("1")) {
-                novoAtivo = new Acao(ticket, nome, qtd, preco);
+                novoAtivo = new Acao(ticker, nome, qtd, preco);
         } else {
-                novoAtivo = new Criptomoeda(ticket, nome, qtd, preco);
+                novoAtivo = new Criptomoeda(ticker, nome, qtd, preco);
         }
 
         carteira.comprar(novoAtivo);
-        println("✅ Compra registrada com sucesso!");
+        println("Compra registrada com sucesso!");
 }
 
 void venderAtivo(CarteiraService carteira) {
         println("\n-- VENDER ATIVO --");
-        String ticket = Entrada.lerEntrada("Ticket para vender: ").toUpperCase();
-        carteira.buscarAtivo(ticket);
+        String ticker = Entrada.lerEntrada("Ticker para vender: ").toUpperCase();
+        carteira.buscarAtivo(ticker);
 
         int qtd = (int) Entrada.lerDouble("Quantidade a vender: ");
         double preco = Entrada.lerDouble("Preço de venda (R$): ");
 
-        carteira.vender(ticket, qtd, preco);
-        println("✅ Venda realizada com sucesso!");
+        carteira.vender(ticker, qtd, preco);
+        println("Venda realizada com sucesso!");
 }
 
 void listarCarteira(CarteiraService carteira) {
