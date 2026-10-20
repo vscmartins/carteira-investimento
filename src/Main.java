@@ -1,7 +1,7 @@
-import domain.model.Acao;
-import domain.model.AtivoFinanceiro;
-import domain.model.Criptomoeda;
-import domain.model.Investidor;
+import domain.entity.Acao;
+import domain.entity.AtivoFinanceiro;
+import domain.entity.Criptomoeda;
+import domain.entity.Investidor;
 import domain.service.CarteiraService;
 import domain.validador.Entrada;
 import domain.dto.ResumoCarteiraDTO;

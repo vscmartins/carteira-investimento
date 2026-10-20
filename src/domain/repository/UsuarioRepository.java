@@ -1,6 +1,6 @@
 package domain.repository;
 
-import domain.model.Investidor;
+import domain.entity.Investidor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

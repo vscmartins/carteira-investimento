@@ -1,7 +1,7 @@
 package domain.service;
 
-import domain.model.AtivoFinanceiro;
-import domain.model.TipoAtivo;
+import domain.entity.AtivoFinanceiro;
+import domain.entity.TipoAtivo;
 import domain.dto.ResumoCarteiraDTO;
 import domain.exception.AtivoNaoEncontradoException;
 import domain.exception.SaldoInsuficienteException;

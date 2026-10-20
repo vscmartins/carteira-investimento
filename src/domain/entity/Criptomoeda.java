@@ -1,4 +1,4 @@
-package domain.model;
+package domain.entity;
 
 public class Criptomoeda extends AtivoFinanceiro {
 

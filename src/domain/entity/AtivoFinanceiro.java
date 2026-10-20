@@ -1,4 +1,4 @@
-package domain.model;
+package domain.entity;
 
 import domain.interfaces.Lucravel;
 import domain.interfaces.Tributavel;
