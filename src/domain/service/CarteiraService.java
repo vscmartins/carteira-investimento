@@ -1,25 +1,41 @@
 package domain.service;
 
 import domain.entity.AtivoFinanceiro;
+import domain.entity.Investidor;
 import domain.entity.TipoAtivo;
 import domain.dto.ResumoCarteiraDTO;
 import domain.exception.AtivoNaoEncontradoException;
 import domain.exception.SaldoInsuficienteException;
+import domain.repository.UsuarioRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.IO.*;
 
 public class CarteiraService {
 
     private List<AtivoFinanceiro> ativos = new ArrayList<>();
+    private final UsuarioRepository usuarioRepository;
 
     private double totalVendidoMesAcoes = 0.0;
     private double totalVendidoMesCripto = 0.0;
 
+    public CarteiraService() {
+        this.usuarioRepository = new UsuarioRepository();
+    }
+
+    public void cadastrarInvestidor(String nome, String cpf, String email, LocalDate dataNascimento) {
+        Investidor investidor = new Investidor(nome, cpf, email, dataNascimento);
+        usuarioRepository.inserir(investidor);
+        println("Investidor processado com sucesso pelo serviço: " + investidor);
+    }
+
 
     public void comprar(AtivoFinanceiro novoAtivo) {
         for (AtivoFinanceiro ativoNaCarteira : ativos) {
-            if (ativoNaCarteira.getTicket().equals(novoAtivo.getTicket())) {
+            if (ativoNaCarteira.getTicker().equals(novoAtivo.getTicker())) {
                 ativoNaCarteira.addQuantidade(novoAtivo.getQntd(), novoAtivo.getPrecoMedio());
                 return;
             }
@@ -33,7 +49,7 @@ public class CarteiraService {
 
     public AtivoFinanceiro buscarAtivo(String ticket) {
         for (AtivoFinanceiro ativo : ativos) {
-            if (ativo.getTicket().equals(ticket)) {
+            if (ativo.getTicker().equals(ticket)) {
                 return ativo;
             }
         }
