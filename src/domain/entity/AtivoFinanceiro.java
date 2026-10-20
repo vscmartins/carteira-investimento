@@ -7,13 +7,13 @@ public abstract class AtivoFinanceiro implements Lucravel, Tributavel {
 
     private String ticker;
     private String nome;
-    private int qntd;
+    private double qntd;
     private double precoMedio;
     private TipoAtivo tipo;
 
     public AtivoFinanceiro(String ticker,
                            String nome,
-                           int qntd,
+                           double qntd,
                            double precoMedio,
                            TipoAtivo tipo) {
         this.ticker = ticker;
@@ -29,7 +29,7 @@ public abstract class AtivoFinanceiro implements Lucravel, Tributavel {
     public String getNome() {
         return nome;
     }
-    public int getQntd() {
+    public double getQntd() {
         return qntd;
     }
     public double getPrecoMedio() {
@@ -39,7 +39,7 @@ public abstract class AtivoFinanceiro implements Lucravel, Tributavel {
         return tipo;
     }
 
-    public void addQuantidade(int qtd, double precoCompra) {
+    public void addQuantidade(double qtd, double precoCompra) {
         double valorTotalAtual = this.qntd * this.precoMedio;
         double valorNovaCompra = qtd * precoCompra;
 

@@ -70,9 +70,9 @@ CREATE TABLE IF NOT EXISTS ativos (
                                       usuario_id INT NOT NULL,
                                       ticker VARCHAR(10) NOT NULL,
                                       nome_empresa VARCHAR(100) NOT NULL,
-                                      tipo_ativo ENUM('ACAO', 'CRIPTO') NOT NULL,
-                                      quantidade INT NOT NULL,
-                                      preco_medio DECIMAL(10, 2) NOT NULL,
+                                      tipo_ativo ENUM('ACAO', 'CRIPTO', 'CRIPTOMOEDA') NOT NULL,
+                                      quantidade DECIMAL(18, 8) NOT NULL,
+                                      preco_medio DECIMAL(15, 2) NOT NULL,
                                       data_operacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                       CONSTRAINT fk_usuario_ativo FOREIGN KEY (usuario_id) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
 ) engine=InnoDB;
@@ -83,7 +83,7 @@ create table if not exists movimentacoes (
                                              id_movimentacao int auto_increment primary key,
                                              id_conta int not null,
                                              id_ativo int null,
-                                             tipo_movimentacao enum('deposito', 'saque', 'compra', 'venda') not null,
+                                             tipo_movimentacao enum('DEPOSITO', 'SAQUE', 'COMPRA', 'VENDA') not null,
     quantidade decimal(18, 8),
     preco_unitario decimal(15, 2),
     valor_total decimal(15, 2) not null,
@@ -91,10 +91,10 @@ create table if not exists movimentacoes (
 
     check (valor_total > 0),
     check (
-    (tipo_movimentacao in ('deposito', 'saque')
+    (tipo_movimentacao in ('DEPOSITO', 'SAQUE')
     and quantidade is null and preco_unitario is null)
     or
-(tipo_movimentacao in ('compra', 'venda')
+(tipo_movimentacao in ('COMPRA', 'VENDA')
     and quantidade is not null and preco_unitario is not null
     and quantidade > 0 and preco_unitario > 0
     and valor_total = round(quantidade * preco_unitario, 2))
@@ -109,12 +109,10 @@ create index idx_movimentacoes_data on movimentacoes(data_movimentacao);
 
 -- --------------------------------------------------------------------------------------------
 
--- Cria o usuário apenas se ele não existir (ou apaga o antigo para recriar limpo)
 DROP USER IF EXISTS 'carteira_app'@'localhost';
 CREATE USER 'carteira_app'@'localhost' IDENTIFIED BY 'Senha-carteira@123';
 
--- Dá os poderes apenas de leitura, inserção e atualização no banco certo
+
 GRANT SELECT, INSERT, UPDATE ON carteira_invest_bd.* TO 'carteira_app'@'localhost';
 
--- Atualiza os privilégios para o segurança do MySQL recarregar as regras
 FLUSH PRIVILEGES;
