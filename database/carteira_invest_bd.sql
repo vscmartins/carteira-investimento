@@ -65,16 +65,17 @@ create table if not exists contas (
 -- ---------------------------------------------------------------------
 -- 4) ativos
 -- ---------------------------------------------------------------------
-create table if not exists ativos (
-                                      id_ativo int auto_increment primary key,
-                                      ticker varchar(10) not null unique,
-    nome_ativo varchar(100) not null,
-    tipo_ativo enum('acao', 'criptomoeda') not null,
-    preco_atual decimal(15, 2) not null,
-
-    check (preco_atual > 0)
-    ) engine=InnoDB;
-
+CREATE TABLE IF NOT EXISTS ativos (
+                                      id_ativo INT AUTO_INCREMENT PRIMARY KEY,
+                                      usuario_id INT NOT NULL,
+                                      ticker VARCHAR(10) NOT NULL,
+                                      nome_empresa VARCHAR(100) NOT NULL,
+                                      tipo_ativo ENUM('ACAO', 'CRIPTO') NOT NULL,
+                                      quantidade INT NOT NULL,
+                                      preco_medio DECIMAL(10, 2) NOT NULL,
+                                      data_operacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                      CONSTRAINT fk_usuario_ativo FOREIGN KEY (usuario_id) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
+) engine=InnoDB;
 -- ---------------------------------------------------------------------
 -- 5) movimentacoes
 -- ---------------------------------------------------------------------
