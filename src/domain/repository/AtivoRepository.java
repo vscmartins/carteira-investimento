@@ -20,7 +20,7 @@ public class AtivoRepository {
             stmt.setString(2, ativo.getTicker());
             stmt.setString(3, ativo.getNome());
             stmt.setString(4, ativo.getTipo().name());
-            stmt.setInt(5, ativo.getQntd());
+            stmt.setDouble(5, ativo.getQntd());
             stmt.setDouble(6, ativo.getPrecoMedio());
 
             stmt.executeUpdate();
