@@ -30,10 +30,8 @@ void main(String[] args) {
 
         String nome = Entrada.lerEntrada("Digite seu nome: ");
         String cpf = Entrada.lerCpf("Digite seu CPF (com ou sem pontos): ");
-        String email = Entrada.lerEntrada("Digite seu e-mail: ");
-
-        String dataStr = Entrada.lerEntrada("Digite sua data de nascimento (AAAA-MM-DD): ");
-        LocalDate dataNascimento = LocalDate.parse(dataStr, DateTimeFormatter.ISO_LOCAL_DATE);
+        String email = Entrada.lerEmail("Digite seu e-mail: ");
+        LocalDate dataNascimento = Entrada.lerData("Digite sua data de nascimento (AAAA-MM-DD): ");
 
         CarteiraService carteira = new CarteiraService();
 
@@ -83,7 +81,7 @@ void comprarAtivo(CarteiraService carteira) {
 
         String ticker = Entrada.lerEntrada("Ticker (ex: PETR4, BTC): ").toUpperCase();
         String nome = Entrada.lerEntrada("Nome da empresa/moeda: ");
-        int qtd = (int) Entrada.lerDouble("Quantidade: ");
+        double qtd = Entrada.lerDouble("Quantidade: ");
         double preco = Entrada.lerDouble("Preço médio (R$): ");
 
         AtivoFinanceiro novoAtivo;

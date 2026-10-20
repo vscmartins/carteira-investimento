@@ -1,14 +1,17 @@
 package domain.validador;
 
+import java.time.LocalDate;
+import java.util.regex.Pattern;
 import static java.lang.IO.*;
 
 public class Entrada {
 
+    private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+
     public static String lerEntrada(String mensagem) {
         while (true) {
-
             String entrada = readln(mensagem);
-
 
             if (entrada == null) {
                 println("\nEntrada encerrada (Ctrl+D). Saindo do Sistema...");
@@ -44,6 +47,28 @@ public class Entrada {
             }
         }
     }
+
+    public static String lerEmail(String mensagem) {
+        while (true) {
+            String email = lerEntrada(mensagem);
+            if (EMAIL_PATTERN.matcher(email).matches()) {
+                return email;
+            }
+            println("E-mail inválido. O formato deve ser exemplo@dominio.com. Tente novamente.");
+        }
+    }
+
+    public static LocalDate lerData(String mensagem) {
+        while (true) {
+            try {
+                String entrada = lerEntrada(mensagem);
+                return LocalDate.parse(entrada, java.time.format.DateTimeFormatter.ISO_LOCAL_DATE);
+            } catch (java.time.format.DateTimeParseException e) {
+                println("Erro: Data inválida. Use o formato exato AAAA-MM-DD (ex: 1995-02-12).");
+            }
+        }
+    }
+
     public static String lerCpf(String mensagem) {
         while (true) {
             String cpf = lerEntrada(mensagem).replaceAll("[^0-9]", "");
@@ -54,6 +79,7 @@ public class Entrada {
             println("Erro: CPF inválido. Digite um CPF válido com 11 dígitos.");
         }
     }
+
     private static boolean isCpfValido(String cpf) {
         if (cpf.matches("(\\d)\\1{10}")) return false;
 
