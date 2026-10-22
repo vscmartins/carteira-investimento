@@ -6,7 +6,6 @@ import domain.validador.Entrada;
 import domain.dto.ResumoCarteiraDTO;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import static java.lang.IO.*;
 
@@ -22,24 +21,26 @@ void main(String[] args) {
                 System.exit(1);
         }
 
-
         println("==============================================");
         println("    BEM-VINDO AO CARTEIRA DE INVESTIMENTO     ");
         println("==============================================");
 
-
-        String nome = Entrada.lerEntrada("Digite seu nome: ");
-        String cpf = Entrada.lerCpf("Digite seu CPF (com ou sem pontos): ");
-        String email = Entrada.lerEmail("Digite seu e-mail: ");
-        LocalDate dataNascimento = Entrada.lerData("Digite sua data de nascimento (AAAA-MM-DD): ");
-
         CarteiraService carteira = new CarteiraService();
+        String nome;
 
-        try {
-                carteira.cadastrarInvestidor(nome, cpf, email, dataNascimento);
-        } catch (Exception e) {
-                println(" Erro ao cadastrar investidor: " + e.getMessage());
-                System.exit(1);
+        while (true) {
+                nome = Entrada.lerEntrada("Digite seu nome: ");
+                String cpf = Entrada.lerCpf("Digite seu CPF (com ou sem pontos): ");
+                String email = Entrada.lerEmail("Digite seu e-mail: ");
+                LocalDate dataNascimento = Entrada.lerData("Digite sua data de nascimento (AAAA-MM-DD): ");
+
+                try {
+                        carteira.cadastrarInvestidor(nome, cpf, email, dataNascimento);
+                        break;
+                } catch (Exception e) {
+                        println("\n" + e.getMessage());
+                        println(" Dica: Tente utilizar outro CPF ou e-mail.\n");
+                }
         }
 
         while (true) {
@@ -100,7 +101,7 @@ void venderAtivo(CarteiraService carteira) {
         String ticker = Entrada.lerEntrada("Ticker para vender: ").toUpperCase();
         carteira.buscarAtivo(ticker);
 
-        int qtd = (int) Entrada.lerDouble("Quantidade a vender: ");
+        double qtd = Entrada.lerDouble("Quantidade a vender: ");
         double preco = Entrada.lerDouble("Preço de venda (R$): ");
 
         carteira.vender(ticker, qtd, preco);

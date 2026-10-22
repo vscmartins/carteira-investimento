@@ -2,7 +2,7 @@ package domain.entity;
 
 public class Acao extends AtivoFinanceiro {
 
-    public Acao(String ticker, String nome, int qntd, double precoMedio) {
+    public Acao(String ticker, String nome, double qntd, double precoMedio) {
         super(
                 ticker,
                 nome,

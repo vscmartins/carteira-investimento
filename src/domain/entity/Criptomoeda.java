@@ -4,7 +4,7 @@ public class Criptomoeda extends AtivoFinanceiro {
 
     public Criptomoeda(String ticker,
                        String nome,
-                       int qntd,
+                       double qntd,
                        double precoMedio) {
         super(ticker,nome, qntd, precoMedio, TipoAtivo.CRIPTOMOEDA);
     }
