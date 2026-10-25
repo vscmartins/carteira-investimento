@@ -45,7 +45,6 @@ public class MovimentacaoRepository {
             stmt.setDouble(6, valorTotal);
 
             stmt.executeUpdate();
-            println("Histórico de movimentação registado com sucesso.");
 
         } catch (SQLException e) {
             println("Erro ao registar movimentação na base de dados: " + e.getMessage());
