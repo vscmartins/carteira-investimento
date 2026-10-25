@@ -16,7 +16,6 @@ import static java.lang.IO.*;
 
 public class AtivoRepository {
 
-
     public void inserirAtivo(int usuarioId, AtivoFinanceiro ativo) {
         String sql = "INSERT INTO ativos (usuario_id, ticker, nome_empresa, tipo_ativo, quantidade, preco_medio) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -31,7 +30,6 @@ public class AtivoRepository {
             stmt.setDouble(6, ativo.getPrecoMedio());
 
             stmt.executeUpdate();
-            println("Ativo " + ativo.getTicker() + " persistido com sucesso no banco de dados.");
 
         } catch (SQLException e) {
             println("Erro ao inserir ativo no banco de dados: " + e.getMessage());
@@ -53,8 +51,8 @@ public class AtivoRepository {
                     String ticker = rs.getString("ticker");
                     String nome = rs.getString("nome_empresa");
                     String tipoStr = rs.getString("tipo_ativo");
-                    double quantidade = rs.getDouble("quantidade");
-                    double precoMedio = rs.getDouble("preco_medio");
+                    double quantidade = rs.getBigDecimal("quantidade").doubleValue();
+                    double precoMedio = rs.getBigDecimal("preco_medio").doubleValue();
 
                     TipoAtivo tipo = TipoAtivo.valueOf(tipoStr);
                     AtivoFinanceiro ativo;

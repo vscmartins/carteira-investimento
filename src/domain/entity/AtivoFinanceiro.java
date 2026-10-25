@@ -53,6 +53,6 @@ public abstract class AtivoFinanceiro implements Lucravel, Tributavel {
 
     @Override
     public String toString() {
-        return String.format("[%s] %s - Qtd: %d | Preco Medio: R$ %.2f", ticker, nome , qntd, precoMedio);
+        return String.format("[%s] %s - Qtd: %.4f | Preco Medio: R$ %.2f", ticker, nome , qntd, precoMedio);
     }
 }

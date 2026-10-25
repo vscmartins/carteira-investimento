@@ -33,9 +33,10 @@ void main(String[] args) {
                 String cpf = Entrada.lerCpf("Digite seu CPF (com ou sem pontos): ");
                 String email = Entrada.lerEmail("Digite seu e-mail: ");
                 LocalDate dataNascimento = Entrada.lerData("Digite sua data de nascimento (AAAA-MM-DD): ");
+                String nomeCorretora = Entrada.lerEntrada("Digite nome da Corretora: ");
 
                 try {
-                        carteira.cadastrarInvestidor(nome, cpf, email, dataNascimento);
+                        carteira.cadastroCliente(nome, cpf, email, dataNascimento, nomeCorretora);
                         break;
                 } catch (Exception e) {
                         println("\n" + e.getMessage());

@@ -7,6 +7,8 @@ import domain.dto.ResumoCarteiraDTO;
 import domain.exception.AtivoNaoEncontradoException;
 import domain.exception.SaldoInsuficienteException;
 import domain.repository.AtivoRepository;
+import domain.repository.CorretoraRepository;
+import domain.repository.ContaRepository;
 import domain.repository.MovimentacaoRepository;
 import domain.repository.UsuarioRepository;
 
@@ -20,33 +22,53 @@ public class CarteiraService {
     private final UsuarioRepository usuarioRepository;
     private final AtivoRepository ativoRepository;
     private final MovimentacaoRepository movimentacaoRepository;
-    private int usuarioIdAtual;
+    private final CorretoraRepository corretoraRepository;
+    private final ContaRepository contaRepository;
 
-    private double totalVendidoMesAcoes = 0.0;
-    private double totalVendidoMesCripto = 0.0;
+    private int usuarioIdAtual;
+    private int contaIdAtual;
 
     public CarteiraService() {
         this.usuarioRepository = new UsuarioRepository();
         this.ativoRepository = new AtivoRepository();
         this.movimentacaoRepository = new MovimentacaoRepository();
+        this.corretoraRepository = new CorretoraRepository();
+        this.contaRepository = new ContaRepository();
     }
 
-    public void cadastrarInvestidor(String nome, String cpf, String email, LocalDate dataNascimento) {
+    public void cadastroCliente(
+            String nome,
+            String cpf,
+            String email,
+            LocalDate dataNascimento,
+            String nomeCorretora) {
+
         Investidor investidor = new Investidor(nome, cpf, email, dataNascimento);
         usuarioRepository.inserir(investidor);
         this.usuarioIdAtual = investidor.getId();
-        println("Investidor processado com sucesso pelo serviço: " + investidor);
+        int corretoraId = corretoraRepository.buscarOuInserir(nomeCorretora);
+        int randomDoisDigitos = (int) (Math.random() * 90) + 10;
+        int digito = (this.usuarioIdAtual % 2 == 0) ? 0 : 1;
+
+        String numContaGerado = "AC" + this.usuarioIdAtual + randomDoisDigitos + "-" + digito;
+
+        this.contaIdAtual = contaRepository.criarConta(
+                this.usuarioIdAtual,
+                corretoraId,
+                numContaGerado);
+
+        println("Investidor e Conta configurados com sucesso! Conta nº: " + numContaGerado);
     }
 
     public void comprar(AtivoFinanceiro novoAtivo) {
-        if (this.usuarioIdAtual == 0) {
-            throw new IllegalStateException("Nenhum investidor cadastrado no sistema.");
+        if (this.usuarioIdAtual == 0 || this.contaIdAtual == 0) {
+            throw new IllegalStateException("Nenhum investidor ou conta ativa no sistema.");
         }
 
         ativoRepository.inserirAtivo(usuarioIdAtual, novoAtivo);
         double valorTotal = novoAtivo.getQntd() * novoAtivo.getPrecoMedio();
         movimentacaoRepository.registrarMovimentacao(
-                1,
+                this.contaIdAtual,
                 null,
                 "COMPRA",
                 novoAtivo.getQntd(),
@@ -82,14 +104,8 @@ public class CarteiraService {
         ativo.subtrairQntd(quantidade);
 
         double volumeDaVenda = quantidade * precoVenda;
-        if (ativo.getTipo() == TipoAtivo.ACAO) {
-            totalVendidoMesAcoes += volumeDaVenda;
-        } else {
-            totalVendidoMesCripto += volumeDaVenda;
-        }
-
         movimentacaoRepository.registrarMovimentacao(
-                1,
+                this.contaIdAtual,
                 null,
                 "VENDA",
                 quantidade,
