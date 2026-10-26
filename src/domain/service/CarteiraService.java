@@ -102,14 +102,25 @@ public class CarteiraService {
     }
 
     public void vender(String ticker, double quantidade, double precoVenda) {
-        AtivoFinanceiro ativo = buscarAtivo(ticker);
+        if (this.usuarioIdAtual == 0 || this.contaIdAtual == 0) {
+            throw new IllegalStateException("Nenhum investidor ou conta ativa no sistema.");
+        }
+        if (quantidade <= 0) {
+            throw new IllegalArgumentException("Erro: A quantidade a vender deve ser maior que zero.");
+        }
+        if (precoVenda <= 0) {
+            throw new IllegalArgumentException("Erro: O preço de venda deve ser maior que zero.");
+        }
 
-        if (ativo.getQntd() < quantidade) {
-            throw new SaldoInsuficienteException("Erro: Você tem apenas " + ativo.getQntd() + " cotas de " + ticker + ".");
+        AtivoFinanceiro ativo = buscarAtivo(ticker);
+        if (quantidade > ativo.getQntd()) {
+            throw new SaldoInsuficienteException(
+                    String.format("Erro: Quantidade insuficiente em carteira. Você possui apenas %.4f cotas de %s | Tentativa de venda: %.4f",
+                            ativo.getQntd(), ticker.toUpperCase(), quantidade)
+            );
         }
 
         ativo.subtrairQntd(quantidade);
-
         double volumeDaVenda = quantidade * precoVenda;
         movimentacaoRepository.registrarMovimentacao(
                 this.contaIdAtual,
