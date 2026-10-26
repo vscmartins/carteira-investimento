@@ -55,4 +55,11 @@ public abstract class AtivoFinanceiro implements Lucravel, Tributavel {
     public String toString() {
         return String.format("[%s] %s - Qtd: %.4f | Preco Medio: R$ %.2f", ticker, nome , qntd, precoMedio);
     }
+
+    public void adicionarPosicao(double novaQtd, double novoPreco) {
+        double valorTotalAntigo = this.qntd * this.precoMedio;
+        double valorTotalNovo = novaQtd * novoPreco;
+        this.qntd += novaQtd;
+        this.precoMedio = (valorTotalAntigo + valorTotalNovo) / this.qntd;
+    }
 }

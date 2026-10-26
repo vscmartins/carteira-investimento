@@ -39,8 +39,7 @@ public class AtivoRepository {
 
     public List<AtivoFinanceiro> listarPorUsuario(int usuarioId) {
         List<AtivoFinanceiro> ativos = new ArrayList<>();
-        String sql = "SELECT ticker, nome_empresa, tipo_ativo, quantidade, preco_medio FROM ativos WHERE usuario_id = ?";
-
+        String sql = "SELECT * FROM ativos WHERE usuario_id = ? AND quantidade > 0";
         try (Connection conexao = ConexaoBanco.obterConexao();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
@@ -76,31 +75,41 @@ public class AtivoRepository {
     }
 
     public void atualizarQuantidade(int usuarioId, String ticker, double novaQuantidade) {
-        if (novaQuantidade <= 0) {
+        // Respeitamos a regra do banco e fazemos apenas UPDATE, mesmo se a quantidade for 0
+        String sql = "UPDATE ativos SET quantidade = ? WHERE usuario_id = ? AND ticker = ?";
+        try (Connection conexao = ConexaoBanco.obterConexao();
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setDouble(1, novaQuantidade);
+            stmt.setInt(2, usuarioId);
+            stmt.setString(3, ticker);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            println("Erro ao atualizar quantidade do ativo: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
 
-            String sql = "DELETE FROM ativos WHERE usuario_id = ? AND ticker = ?";
-            try (Connection conexao = ConexaoBanco.obterConexao();
-                 PreparedStatement stmt = conexao.prepareStatement(sql)) {
-                stmt.setInt(1, usuarioId);
-                stmt.setString(2, ticker);
-                stmt.executeUpdate();
-            } catch (SQLException e) {
-                println("Erro ao remover ativo zerado: " + e.getMessage());
-                throw new RuntimeException(e);
-            }
-        } else {
+    public void atualizarPosicao(
+            int usuarioId,
+            String ticker,
+            double novaQuantidade,
+            double novoPrecoMedio) {
 
-            String sql = "UPDATE ativos SET quantidade = ? WHERE usuario_id = ? AND ticker = ?";
-            try (Connection conexao = ConexaoBanco.obterConexao();
-                 PreparedStatement stmt = conexao.prepareStatement(sql)) {
-                stmt.setDouble(1, novaQuantidade);
-                stmt.setInt(2, usuarioId);
-                stmt.setString(3, ticker);
-                stmt.executeUpdate();
-            } catch (SQLException e) {
-                println("Erro ao atualizar quantidade do ativo: " + e.getMessage());
-                throw new RuntimeException(e);
-            }
+        String sql = "UPDATE ativos SET quantidade = ?,preco_medio = ? WHERE usuario_id = ? AND ticker = ?";
+
+        try (Connection conexao = ConexaoBanco.obterConexao();
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
+
+            stmt.setDouble(1, novaQuantidade);
+            stmt.setDouble(2, novoPrecoMedio);
+            stmt.setInt(3, usuarioId);
+            stmt.setString(4, ticker);
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            println("Erro ao atualizar posicao do ativo: " + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 }

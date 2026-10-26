@@ -71,8 +71,22 @@ public class CarteiraService {
                     String.format("Erro: Saldo insuficiente para compra. Saldo disponível: R$ %.2f | Total da compra: R$ %.2f", saldoAtual, valorTotal)
             );
         }
-
-        ativoRepository.inserirAtivo(usuarioIdAtual, novoAtivo);
+        boolean ativoJaExiste = false;
+        for (AtivoFinanceiro ativoExistente : getAtivos()) {
+            if (ativoExistente.getTicker().equalsIgnoreCase(novoAtivo.getTicker())) {
+                ativoExistente.adicionarPosicao(novoAtivo.getQntd(), novoAtivo.getPrecoMedio());
+                ativoRepository.atualizarPosicao(
+                        this.usuarioIdAtual,
+                        ativoExistente.getTicker(),
+                        ativoExistente.getQntd(),
+                        ativoExistente.getPrecoMedio());
+                ativoJaExiste = true;
+                break;
+            }
+        }
+        if (!ativoJaExiste) {
+            ativoRepository.inserirAtivo(usuarioIdAtual, novoAtivo);
+        }
 
         movimentacaoRepository.registrarMovimentacao(
                 this.contaIdAtual,
