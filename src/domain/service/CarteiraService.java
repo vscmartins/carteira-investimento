@@ -119,8 +119,8 @@ public class CarteiraService {
                             ativo.getQntd(), ticker.toUpperCase(), quantidade)
             );
         }
-
         ativo.subtrairQntd(quantidade);
+        ativoRepository.atualizarQuantidade(this.usuarioIdAtual, ticker, ativo.getQntd());
         double volumeDaVenda = quantidade * precoVenda;
         movimentacaoRepository.registrarMovimentacao(
                 this.contaIdAtual,

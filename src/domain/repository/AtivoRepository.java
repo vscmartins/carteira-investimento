@@ -74,4 +74,33 @@ public class AtivoRepository {
 
         return ativos;
     }
+
+    public void atualizarQuantidade(int usuarioId, String ticker, double novaQuantidade) {
+        if (novaQuantidade <= 0) {
+
+            String sql = "DELETE FROM ativos WHERE usuario_id = ? AND ticker = ?";
+            try (Connection conexao = ConexaoBanco.obterConexao();
+                 PreparedStatement stmt = conexao.prepareStatement(sql)) {
+                stmt.setInt(1, usuarioId);
+                stmt.setString(2, ticker);
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                println("Erro ao remover ativo zerado: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
+        } else {
+
+            String sql = "UPDATE ativos SET quantidade = ? WHERE usuario_id = ? AND ticker = ?";
+            try (Connection conexao = ConexaoBanco.obterConexao();
+                 PreparedStatement stmt = conexao.prepareStatement(sql)) {
+                stmt.setDouble(1, novaQuantidade);
+                stmt.setInt(2, usuarioId);
+                stmt.setString(3, ticker);
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                println("Erro ao atualizar quantidade do ativo: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
