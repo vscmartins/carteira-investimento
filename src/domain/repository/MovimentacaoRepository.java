@@ -2,6 +2,7 @@ package domain.repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static java.lang.IO.*;
@@ -15,6 +16,7 @@ public class MovimentacaoRepository {
             Double quantidade,
             Double precoUnitario,
             double valorTotal) {
+
         String sql = "INSERT INTO movimentacoes (id_conta, id_ativo, tipo_movimentacao, quantidade, preco_unitario, valor_total) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conexao = ConexaoBanco.obterConexao();
@@ -50,5 +52,24 @@ public class MovimentacaoRepository {
             println("Erro ao registar movimentação na base de dados: " + e.getMessage());
             throw new RuntimeException(e);
         }
+    }
+
+    public double calcularSaldo(int contaId) {
+        String sql = "SELECT SUM(CASE WHEN tipo_movimentacao IN ('DEPOSITO','VENDA') THEN valor_total ELSE -valor_total END) AS saldo FROM movimentacoes WHERE id_conta = ?";
+
+        try (Connection conexao = ConexaoBanco.obterConexao();
+             PreparedStatement stmt = conexao.prepareStatement(sql)) {
+
+            stmt.setInt(1, contaId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next() && rs.getBigDecimal("saldo") != null) {
+                    return rs.getBigDecimal("saldo").doubleValue();
+                }
+            }
+        } catch (SQLException e) {
+            println("Erro ao calcular saldo: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return 0.0;
     }
 }

@@ -2,5 +2,6 @@ package domain.dto;
 
 public record ResumoCarteiraDTO(
         int quantidadeTotalAtivos,
-        double valorTotalAlocado
+        double valorTotalAlocado,
+        double saldoDisponivel
 ) {}

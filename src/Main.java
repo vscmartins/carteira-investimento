@@ -50,12 +50,14 @@ void main(String[] args) {
                 println("2. Vender Ativo");
                 println("3. Listar Carteira");
                 println("4. Ver Resumo");
-                println("5. Sair");
+                println("5. Depositar Dinheiro");
+                println("6. Sacar Dinheiro");
+                println("7. Sair");
 
                 String opcao = Entrada.lerEntradaComRegex(
-                        "Escolha uma opção (1-5): ",
-                        "[1-5]",
-                        "Digite um número de 1 a 5.");
+                        "Escolha uma opção (1-7): ",
+                        "[1-7]",
+                        "Digite um número de 1 a 7.");
 
                 try {
                         switch (opcao) {
@@ -63,7 +65,9 @@ void main(String[] args) {
                                 case "2" -> venderAtivo(carteira);
                                 case "3" -> listarCarteira(carteira);
                                 case "4" -> mostrarResumo(carteira);
-                                case "5" -> {
+                                case "5" -> depositarDinheiro(carteira);
+                                case "6" -> sacarDinheiro(carteira);
+                                case "7" -> {
                                         println("Saindo do Carteira de Investimento. Até logo!");
                                         System.exit(0);
                                 }
@@ -126,4 +130,19 @@ void mostrarResumo(CarteiraService carteira) {
 
         println("Ativos diferentes na carteira: " + resumo.quantidadeTotalAtivos());
         println(String.format("Valor total investido: R$ %.2f", resumo.valorTotalAlocado()));
+        println(String.format("Saldo disponível para uso: R$ %.2f", resumo.saldoDisponivel()));
+}
+
+void depositarDinheiro(CarteiraService carteira) {
+        println("\n-- DEPOSITAR DINHEIRO --");
+        double valor = Entrada.lerDouble("Valor a depositar (R$): ");
+        carteira.depositar(valor);
+        println("Depósito de R$ " + valor + " realizado com sucesso!");
+}
+
+void sacarDinheiro(CarteiraService carteira) {
+        println("\n-- SACAR DINHEIRO --");
+        double valor = Entrada.lerDouble("Valor a sacar (R$): ");
+        carteira.sacar(valor);
+        println("Saque de R$ " + valor + " realizado com sucesso!");
 }

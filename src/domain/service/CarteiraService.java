@@ -113,13 +113,49 @@ public class CarteiraService {
                 volumeDaVenda
         );
     }
-
     public ResumoCarteiraDTO obterResumo() {
         List<AtivoFinanceiro> ativos = getAtivos();
         double valorTotal = 0.0;
         for (AtivoFinanceiro ativo : ativos) {
             valorTotal += (ativo.getQntd() * ativo.getPrecoMedio());
         }
-        return new ResumoCarteiraDTO(ativos.size(), valorTotal);
+        double saldoLivre = movimentacaoRepository.calcularSaldo(this.contaIdAtual);
+        return new ResumoCarteiraDTO(ativos.size(), valorTotal, saldoLivre);
+    }
+
+    public void depositar(double valor) {
+        if (this.contaIdAtual == 0) {
+            throw new IllegalStateException("Nenhuma conta ativa no sistema.");
+        }
+        if (valor <= 0) {
+            throw new IllegalArgumentException("Erro: O valor do depósito deve ser maior que zero.");
+        }
+
+        movimentacaoRepository.registrarMovimentacao(
+                this.contaIdAtual,
+                null,
+                "DEPOSITO",
+                null,
+                null,
+                valor
+        );
+    }
+
+    public void sacar(double valor) {
+        if (this.contaIdAtual == 0) {
+            throw new IllegalStateException("Nenhuma conta ativa no sistema.");
+        }
+        if (valor <= 0) {
+            throw new IllegalArgumentException("Erro: O valor do saque deve ser maior que zero.");
+        }
+
+        movimentacaoRepository.registrarMovimentacao(
+                this.contaIdAtual,
+                null,
+                "SAQUE",
+                null,
+                null,
+                valor
+        );
     }
 }
