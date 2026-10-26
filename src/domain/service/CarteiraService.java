@@ -64,9 +64,16 @@ public class CarteiraService {
         if (this.usuarioIdAtual == 0 || this.contaIdAtual == 0) {
             throw new IllegalStateException("Nenhum investidor ou conta ativa no sistema.");
         }
+        double valorTotal = novoAtivo.getQntd() * novoAtivo.getPrecoMedio();
+        double saldoAtual = movimentacaoRepository.calcularSaldo(this.contaIdAtual);
+        if (valorTotal > saldoAtual) {
+            throw new SaldoInsuficienteException(
+                    String.format("Erro: Saldo insuficiente para compra. Saldo disponível: R$ %.2f | Total da compra: R$ %.2f", saldoAtual, valorTotal)
+            );
+        }
 
         ativoRepository.inserirAtivo(usuarioIdAtual, novoAtivo);
-        double valorTotal = novoAtivo.getQntd() * novoAtivo.getPrecoMedio();
+
         movimentacaoRepository.registrarMovimentacao(
                 this.contaIdAtual,
                 null,
@@ -147,6 +154,12 @@ public class CarteiraService {
         }
         if (valor <= 0) {
             throw new IllegalArgumentException("Erro: O valor do saque deve ser maior que zero.");
+        }
+        double saldoAtual = movimentacaoRepository.calcularSaldo(this.contaIdAtual);
+        if (valor > saldoAtual) {
+            throw new SaldoInsuficienteException(
+                    String.format("Erro: Saldo insuficiente para realizar o saque. Saldo disponível: R$ %.2f | Tentativa: R$ %.2f", saldoAtual, valor)
+            );
         }
 
         movimentacaoRepository.registrarMovimentacao(
