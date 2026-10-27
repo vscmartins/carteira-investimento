@@ -1,6 +1,8 @@
 package domain.entity;
 
-public class Acao extends AtivoFinanceiro {
+import domain.interfaces.Tributavel;
+
+public class Acao extends AtivoFinanceiro implements Tributavel {
 
     public Acao(String ticker, String nome, double qntd, double precoMedio) {
         super(

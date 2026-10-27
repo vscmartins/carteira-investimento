@@ -1,6 +1,8 @@
 package domain.entity;
 
-public class Criptomoeda extends AtivoFinanceiro {
+import domain.interfaces.Tributavel;
+
+public class Criptomoeda extends AtivoFinanceiro implements Tributavel {
 
     public Criptomoeda(String ticker,
                        String nome,

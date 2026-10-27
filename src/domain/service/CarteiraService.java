@@ -136,6 +136,13 @@ public class CarteiraService {
         ativo.subtrairQntd(quantidade);
         ativoRepository.atualizarQuantidade(this.usuarioIdAtual, ticker, ativo.getQntd());
         double volumeDaVenda = quantidade * precoVenda;
+        double impostoRetido = 0.0;
+
+        if (ativo instanceof domain.interfaces.Tributavel tributavel) {
+            double custoDaOperacao = quantidade * ativo.getPrecoMedio();
+            double lucro = volumeDaVenda - custoDaOperacao;
+            impostoRetido = tributavel.calcularImposto(lucro, volumeDaVenda);
+        }
         movimentacaoRepository.registrarMovimentacao(
                 this.contaIdAtual,
                 null,
@@ -144,6 +151,17 @@ public class CarteiraService {
                 precoVenda,
                 volumeDaVenda
         );
+        if (impostoRetido > 0) {
+            movimentacaoRepository.registrarMovimentacao(
+                    this.contaIdAtual,
+                    null,
+                    "SAQUE",
+                    null,
+                    null,
+                    impostoRetido
+            );
+            println(String.format("\n Atenção: Imposto retido da venda foi R$ %.2f ", impostoRetido));
+        }
     }
     public ResumoCarteiraDTO obterResumo() {
         List<AtivoFinanceiro> ativos = getAtivos();
